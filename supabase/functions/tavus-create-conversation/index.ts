@@ -184,7 +184,7 @@ serve(async (req) => {
         enable_recording: true,
         enable_transcription: true,
         max_call_duration: 1800, // 30 minutes
-        language: 'en'
+        language: 'multilingual'
       }
     };
 
