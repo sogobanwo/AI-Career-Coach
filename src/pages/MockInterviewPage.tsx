@@ -62,6 +62,21 @@ export default function MockInterviewPage() {
       );
       
       console.log('Conversation created:', conversation);
+      console.log('Conversation URL:', conversation.conversation_url);
+      
+      // Log additional details about the conversation
+      if (conversation.conversation_url) {
+        console.log('✅ Live Tavus conversation URL available:', conversation.conversation_url);
+        console.log('📋 Conversation ID:', conversation.conversation_id);
+        console.log('🎭 Replica ID:', conversation.replica_id);
+        console.log('👤 Persona ID:', conversation.persona_id);
+        console.log('📅 Created at:', conversation.created_at);
+        console.log('🔄 Status:', conversation.status);
+      } else {
+        console.log('⚠️ No conversation URL - running in mock mode');
+        console.log('🎮 Mock mode active:', conversation.isMockMode);
+      }
+      
       setConversationData(conversation);
       setIsMockMode(conversation.isMockMode || false);
       setIsInterviewActive(true);
@@ -70,16 +85,19 @@ export default function MockInterviewPage() {
       
       // For real Tavus connections, set loaded after a brief delay
       if (!conversation.isMockMode && conversation.conversation_url) {
+        console.log('🔄 Loading video interface for URL:', conversation.conversation_url);
         setTimeout(() => {
           setIsVideoLoaded(true);
+          console.log('✅ Video interface loaded successfully');
         }, 2000);
       } else {
         // For mock mode, set loaded immediately
         setIsVideoLoaded(true);
+        console.log('🎮 Mock mode interface loaded');
       }
       
     } catch (err) {
-      console.error('Error starting interview:', err);
+      console.error('❌ Error starting interview:', err);
       setError(err instanceof Error ? err.message : 'Failed to start interview. Please try again.');
     } finally {
       setIsLoading(false);
@@ -89,10 +107,14 @@ export default function MockInterviewPage() {
   const endInterview = async () => {
     if (conversationData?.conversation_id && !isMockMode) {
       try {
+        console.log('🔄 Ending conversation:', conversationData.conversation_id);
         await TavusService.endConversation(conversationData.conversation_id);
+        console.log('✅ Conversation ended successfully');
       } catch (err) {
-        console.error('Error ending conversation:', err);
+        console.error('❌ Error ending conversation:', err);
       }
+    } else {
+      console.log('🎮 Ending mock interview session');
     }
     
     setIsInterviewActive(false);
@@ -104,15 +126,20 @@ export default function MockInterviewPage() {
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
+    console.log('🔇 Mute toggled:', !isMuted);
   };
 
   const toggleCamera = () => {
     setIsCameraOn(!isCameraOn);
+    console.log('📹 Camera toggled:', !isCameraOn);
   };
 
   const openConversationInNewTab = () => {
     if (conversationData?.conversation_url) {
+      console.log('🔗 Opening conversation in new tab:', conversationData.conversation_url);
       window.open(conversationData.conversation_url, '_blank');
+    } else {
+      console.log('⚠️ No conversation URL available to open');
     }
   };
 
