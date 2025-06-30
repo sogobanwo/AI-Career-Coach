@@ -91,15 +91,6 @@ export default function DashboardPage() {
       link: '/mock-interview',
       status: userActivity?.mockInterviewsCount ? `${userActivity.mockInterviewsCount} Sessions` : 'Practice',
       completed: userActivity?.mockInterviewsCount > 0
-    },
-    {
-      title: 'View Progress',
-      description: 'Track your career development journey',
-      icon: TrendingUp,
-      color: 'from-orange-500 to-red-500',
-      link: '/progress',
-      status: 'View',
-      completed: false
     }
   ];
 
