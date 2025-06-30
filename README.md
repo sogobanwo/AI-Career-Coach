@@ -275,10 +275,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you have any questions or need help:
 
-- 📧 Email: support@aicareercoach.app
-- 💬 Discord: [Join our community](https://discord.gg/aicareercoach)
-- 📖 Documentation: [docs.aicareercoach.app](https://docs.aicareercoach.app)
-- 🐛 Issues: [GitHub Issues](https://github.com/your-repo/ai-career-coach/issues)
+- 📧 Email: sogobanwo@gmail.com
 
 ---
 
