@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Send, Star, Clock, Brain, Sparkles, Zap, MessageCircle, TrendingUp, Video, PhoneOff, Mic, MicOff, Camera, CameraOff, AlertTriangle } from 'lucide-react';
+import { Play, Send, Star, Clock, Brain, Sparkles, Zap, MessageCircle, TrendingUp, Video, PhoneOff, Mic, MicOff, Camera, CameraOff, AlertTriangle, ExternalLink } from 'lucide-react';
 import { TavusService } from '../services/tavusService';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -60,14 +60,15 @@ export default function MockInterviewPage() {
         selectedRole,
         user?.user_metadata?.full_name || 'Candidate'
       );
-      console.log(conversationData)
+      
+      console.log('Conversation created:', conversation);
       setConversationData(conversation);
       setIsMockMode(conversation.isMockMode || false);
       setIsInterviewActive(true);
       setInterviewTime(0);
       setIsVideoLoaded(false);
       
-      // Simulate video loading for real connections
+      // For real Tavus connections, set loaded after a brief delay
       if (!conversation.isMockMode && conversation.conversation_url) {
         setTimeout(() => {
           setIsVideoLoaded(true);
@@ -76,8 +77,7 @@ export default function MockInterviewPage() {
         // For mock mode, set loaded immediately
         setIsVideoLoaded(true);
       }
-      console.log(conversationData)
-
+      
     } catch (err) {
       console.error('Error starting interview:', err);
       setError(err instanceof Error ? err.message : 'Failed to start interview. Please try again.');
@@ -108,6 +108,12 @@ export default function MockInterviewPage() {
 
   const toggleCamera = () => {
     setIsCameraOn(!isCameraOn);
+  };
+
+  const openConversationInNewTab = () => {
+    if (conversationData?.conversation_url) {
+      window.open(conversationData.conversation_url, '_blank');
+    }
   };
 
   return (
@@ -311,6 +317,7 @@ export default function MockInterviewPage() {
                       className="w-full h-96 lg:h-[600px] rounded-2xl border-2 border-gray-200 dark:border-gray-600"
                       allow="camera; microphone; fullscreen; display-capture; autoplay"
                       onLoad={() => setIsVideoLoaded(true)}
+                      title="Tavus AI Interview"
                     />
 
                     {/* Video Controls Overlay */}
@@ -327,6 +334,14 @@ export default function MockInterviewPage() {
                       </div>
                       
                       <div className="flex items-center space-x-3">
+                        <button
+                          onClick={openConversationInNewTab}
+                          className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors"
+                          title="Open in new tab"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </button>
+                        
                         <button
                           onClick={toggleMute}
                           className={`p-2 rounded-lg transition-colors ${isMuted ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-600 hover:bg-gray-700'}`}
@@ -360,6 +375,23 @@ export default function MockInterviewPage() {
                           : 'Unable to establish video connection. The interview simulation is running in demo mode.'
                         }
                       </p>
+                      
+                      {/* Show conversation URL if available but not embedded */}
+                      {conversationData?.conversation_url && (
+                        <div className="mb-6">
+                          <button
+                            onClick={openConversationInNewTab}
+                            className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all transform hover:scale-105"
+                          >
+                            <ExternalLink className="h-5 w-5" />
+                            <span>Open Interview in New Tab</span>
+                          </button>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                            Click to join your live AI interview session
+                          </p>
+                        </div>
+                      )}
+                      
                       {isMockMode && (
                         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 text-left">
                           <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">Demo Features:</h4>
@@ -387,10 +419,12 @@ export default function MockInterviewPage() {
                       <p><strong>Duration:</strong> {formatTime(interviewTime)}</p>
                       <p><strong>Mode:</strong> {isMockMode ? 'Demo/Practice Mode' : 'Live Tavus AI'}</p>
                       {conversationData && (
-                        <p><strong>Conversation URL:</strong> {conversationData.conversation_url}</p>
-                      )}
-                      {conversationData && (
-                        <p><strong>Session ID:</strong> {conversationData.conversation_id}</p>
+                        <>
+                          <p><strong>Session ID:</strong> {conversationData.conversation_id}</p>
+                          {conversationData.conversation_url && (
+                            <p><strong>Status:</strong> <span className="text-green-600 dark:text-green-400">Connected</span></p>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>

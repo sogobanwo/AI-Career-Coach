@@ -15,6 +15,7 @@ interface ConversationRequest {
 interface TavusConversationRequest {
   replica_id?: string;
   persona_id?: string;
+  audio_only?: boolean;
   callback_url?: string;
   conversation_name?: string;
   conversational_context?: string;
@@ -86,28 +87,28 @@ function generateInterviewContext(jobRole: string, candidateName?: string, custo
   
   const additionalContext = customContext ? ` Additional context: ${customContext}` : '';
   
-  return baseContext + candidateContext + additionalContext + ` Conduct a thorough but friendly interview, asking follow-up questions based on their responses. Provide constructive feedback and maintain a professional, encouraging tone throughout the conversation.`;
+  return baseContext + candidateContext + additionalContext + ` Conduct a thorough but friendly interview, asking follow-up questions based on their responses. Provide constructive feedback and maintain a professional, encouraging tone throughout the conversation. The interview should last approximately 15-30 minutes.`;
 }
 
 function generateCustomGreeting(jobRole: string, candidateName?: string): string {
   const name = candidateName || 'there';
   
   const greetings: { [key: string]: string } = {
-    'Software Engineer': `Hello ${name}! Welcome to your technical interview for the Software Engineer position. I'm excited to learn about your coding experience and problem-solving approach. Shall we get started?`,
+    'Software Engineer': `Hello ${name}! Welcome to your technical interview for the Software Engineer position. I'm excited to learn about your coding experience and problem-solving approach. Are you ready to get started?`,
     
-    'Product Manager': `Hi ${name}! Thanks for joining me today for the Product Manager interview. I'm looking forward to discussing your product strategy experience and how you approach building great products. Ready to begin?`,
+    'Product Manager': `Hi ${name}! Thanks for joining me today for the Product Manager interview. I'm looking forward to discussing your product strategy experience and how you approach building great products. Shall we begin?`,
     
     'Data Scientist': `Hello ${name}! Welcome to your Data Scientist interview. I'm eager to hear about your experience with data analysis, machine learning, and how you turn data into actionable insights. Let's dive in!`,
     
-    'UX Designer': `Hi ${name}! Great to meet you for the UX Designer interview. I'm excited to learn about your design process, user research experience, and how you create meaningful user experiences. Shall we start?`,
+    'UX Designer': `Hi ${name}! Great to meet you for the UX Designer interview. I'm excited to learn about your design process, user research experience, and how you create meaningful user experiences. Ready to start?`,
     
-    'Marketing Manager': `Hello ${name}! Welcome to your Marketing Manager interview. I'm looking forward to discussing your marketing strategies, campaign successes, and how you drive customer engagement. Ready to begin?`,
+    'Marketing Manager': `Hello ${name}! Welcome to your Marketing Manager interview. I'm looking forward to discussing your marketing strategies, campaign successes, and how you drive customer engagement. Let's begin!`,
     
-    'Sales Representative': `Hi ${name}! Thanks for joining the Sales Representative interview. I'm excited to hear about your sales experience, relationship-building skills, and how you achieve your targets. Let's get started!`,
+    'Sales Representative': `Hi ${name}! Thanks for joining the Sales Representative interview. I'm excited to hear about your sales experience, relationship-building skills, and how you achieve your targets. Shall we get started?`,
     
-    'Business Analyst': `Hello ${name}! Welcome to your Business Analyst interview. I'm eager to discuss your analytical skills, process improvement experience, and how you bridge business and technical requirements. Shall we begin?`,
+    'Business Analyst': `Hello ${name}! Welcome to your Business Analyst interview. I'm eager to discuss your analytical skills, process improvement experience, and how you bridge business and technical requirements. Ready to begin?`,
     
-    'DevOps Engineer': `Hi ${name}! Great to meet you for the DevOps Engineer interview. I'm looking forward to discussing your infrastructure experience, automation skills, and how you ensure reliable deployments. Ready to start?`
+    'DevOps Engineer': `Hi ${name}! Great to meet you for the DevOps Engineer interview. I'm looking forward to discussing your infrastructure experience, automation skills, and how you ensure reliable deployments. Let's start!`
   };
 
   return greetings[jobRole] || `Hello ${name}! Welcome to your interview for the ${jobRole} position. I'm excited to learn more about your experience and qualifications. Let's begin!`;
@@ -176,6 +177,7 @@ serve(async (req) => {
       conversation_name: conversationName,
       conversational_context: conversationalContext,
       custom_greeting: customGreeting,
+      audio_only: false,
       properties: {
         participant_left_timeout: 300, // 5 minutes
         participant_absent_timeout: 120, // 2 minutes

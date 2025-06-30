@@ -4,6 +4,7 @@ import { DashboardService } from './dashboardService';
 export interface TavusConversationRequest {
   replica_id?: string;
   persona_id?: string;
+  audio_only?: boolean;
   callback_url?: string;
   conversation_name?: string;
   conversational_context?: string;
@@ -17,14 +18,15 @@ export interface TavusConversationRequest {
     max_call_duration?: number;
     participant_egress_policy?: string;
     enable_background_blur?: boolean;
+    language?: string;
   };
 }
 
 export interface TavusConversationResponse {
   conversation_id: string;
   conversation_name: string;
-  status: string;
-  conversation_url: string | null;
+  status: 'active' | 'ended';
+  conversation_url: string;
   replica_id: string;
   persona_id: string;
   created_at: string;
