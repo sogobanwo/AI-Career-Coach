@@ -417,7 +417,7 @@ export default function MockInterviewPage() {
                       <p><strong>Position:</strong> {selectedRole}</p>
                       <p><strong>Candidate:</strong> {user?.user_metadata?.full_name || 'Anonymous'}</p>
                       <p><strong>Duration:</strong> {formatTime(interviewTime)}</p>
-                      <p><strong>Mode:</strong> {isMockMode ? 'Demo/Practice Mode' : \'Live Tavus AI'}</p>
+                      <p><strong>Mode:</strong> {isMockMode ? 'Demo/Practice Mode' : 'Live Tavus AI'}</p>
                       {conversationData && (
                         <>
                           <p><strong>Session ID:</strong> {conversationData.conversation_id}</p>
