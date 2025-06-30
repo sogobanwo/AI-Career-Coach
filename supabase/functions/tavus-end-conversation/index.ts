@@ -42,7 +42,30 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Get environment variables
+    // Handle mock conversations (they don't need to be ended via API)
+    if (conversationId.startsWith('mock_')) {
+      console.log('Ending mock conversation:', conversationId)
+      
+      const response = {
+        success: true,
+        conversation: {
+          conversation_id: conversationId,
+          status: 'ended',
+          ended_at: new Date().toISOString()
+        },
+        message: 'Mock conversation ended successfully'
+      }
+
+      return new Response(
+        JSON.stringify(response),
+        { 
+          status: 200, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    // Get environment variables for real Tavus API calls
     const tavusApiKey = Deno.env.get('TAVUS_API_KEY')
 
     if (!tavusApiKey) {
@@ -57,6 +80,8 @@ Deno.serve(async (req) => {
         }
       )
     }
+
+    console.log('Ending real Tavus conversation:', conversationId)
 
     // Make request to Tavus API to end conversation
     const tavusResponse = await fetch(
@@ -76,7 +101,8 @@ Deno.serve(async (req) => {
       console.error('Tavus API error:', {
         status: tavusResponse.status,
         statusText: tavusResponse.statusText,
-        error: errorText
+        error: errorText,
+        conversationId: conversationId
       })
       
       return new Response(
@@ -91,30 +117,40 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Parse Tavus API response with error handling
+    // Parse Tavus API response with comprehensive error handling
     let tavusData
     try {
-      tavusData = await tavusResponse.json()
-    } catch (jsonError) {
-      // Get raw response text for debugging
       const responseText = await tavusResponse.text()
+      console.log('Tavus API response text:', responseText)
+      
+      // Check if response is empty or just whitespace
+      if (!responseText || responseText.trim() === '') {
+        console.log('Empty response from Tavus API, treating as success')
+        tavusData = {
+          conversation_id: conversationId,
+          status: 'ended',
+          ended_at: new Date().toISOString()
+        }
+      } else {
+        // Try to parse as JSON
+        tavusData = JSON.parse(responseText)
+      }
+    } catch (jsonError) {
       console.error('Failed to parse Tavus API response as JSON:', {
         error: jsonError,
-        responseText: responseText,
         status: tavusResponse.status,
-        headers: Object.fromEntries(tavusResponse.headers.entries())
+        headers: Object.fromEntries(tavusResponse.headers.entries()),
+        conversationId: conversationId
       })
       
-      return new Response(
-        JSON.stringify({ 
-          error: 'Invalid response from Tavus API',
-          details: 'The conversation service returned an unexpected response format. Please try again later.'
-        }),
-        { 
-          status: 502, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
+      // If JSON parsing fails but the HTTP status was successful,
+      // we'll treat it as a successful end operation
+      console.log('Treating as successful end operation despite JSON parsing error')
+      tavusData = {
+        conversation_id: conversationId,
+        status: 'ended',
+        ended_at: new Date().toISOString()
+      }
     }
 
     // Return success response
@@ -123,6 +159,8 @@ Deno.serve(async (req) => {
       conversation: tavusData,
       message: 'Conversation ended successfully'
     }
+
+    console.log('Successfully ended conversation:', conversationId)
 
     return new Response(
       JSON.stringify(response),
