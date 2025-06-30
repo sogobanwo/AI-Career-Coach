@@ -91,7 +91,31 @@ Deno.serve(async (req) => {
       )
     }
 
-    const tavusData = await tavusResponse.json()
+    // Parse Tavus API response with error handling
+    let tavusData
+    try {
+      tavusData = await tavusResponse.json()
+    } catch (jsonError) {
+      // Get raw response text for debugging
+      const responseText = await tavusResponse.text()
+      console.error('Failed to parse Tavus API response as JSON:', {
+        error: jsonError,
+        responseText: responseText,
+        status: tavusResponse.status,
+        headers: Object.fromEntries(tavusResponse.headers.entries())
+      })
+      
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid response from Tavus API',
+          details: 'The conversation service returned an unexpected response format. Please try again later.'
+        }),
+        { 
+          status: 502, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
 
     // Return success response
     const response = {
