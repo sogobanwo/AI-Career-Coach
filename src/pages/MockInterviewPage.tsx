@@ -386,6 +386,9 @@ export default function MockInterviewPage() {
                       <p><strong>Duration:</strong> {formatTime(interviewTime)}</p>
                       <p><strong>Mode:</strong> {isMockMode ? 'Demo/Practice Mode' : 'Live Tavus AI'}</p>
                       {conversationData && (
+                        <p><strong>Conversation URL:</strong> {conversationData.conversation_url}</p>
+                      )}
+                      {conversationData && (
                         <p><strong>Session ID:</strong> {conversationData.conversation_id}</p>
                       )}
                     </div>
