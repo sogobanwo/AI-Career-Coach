@@ -60,7 +60,7 @@ export default function MockInterviewPage() {
         selectedRole,
         user?.user_metadata?.full_name || 'Candidate'
       );
-      
+      console.log(conversationData)
       setConversationData(conversation);
       setIsMockMode(conversation.isMockMode || false);
       setIsInterviewActive(true);
@@ -76,7 +76,8 @@ export default function MockInterviewPage() {
         // For mock mode, set loaded immediately
         setIsVideoLoaded(true);
       }
-      
+      console.log(conversationData)
+
     } catch (err) {
       console.error('Error starting interview:', err);
       setError(err instanceof Error ? err.message : 'Failed to start interview. Please try again.');
@@ -386,7 +387,7 @@ export default function MockInterviewPage() {
                       <p><strong>Duration:</strong> {formatTime(interviewTime)}</p>
                       <p><strong>Mode:</strong> {isMockMode ? 'Demo/Practice Mode' : 'Live Tavus AI'}</p>
                       {conversationData && (
-                        <p><strong>Conversation URL:</strong> {conversationData}</p>
+                        <p><strong>Conversation URL:</strong> {conversationData.conversation_url}</p>
                       )}
                       {conversationData && (
                         <p><strong>Session ID:</strong> {conversationData.conversation_id}</p>
